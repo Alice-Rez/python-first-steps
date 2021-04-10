@@ -19,8 +19,15 @@ def get_gh_repo(languages, sort="stars", order="desc"):
     params = {"q": query, "sort": sort, "order": order}
 
     response = requests.get(url, params)
+    status = response.status_code
 
-    return response.json()["items"]
+    if status == 403:
+        raise RuntimeError(
+            f"Rate limit rreached. Please wait a minute and try again.")
+    elif status != 200:
+        raise RuntimeError(f"An error ocurred with status code: {status}")
+    else:
+        return response.json()["items"]
 
 
 if __name__ == "__main__":
